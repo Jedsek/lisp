@@ -1,0 +1,56 @@
+WHITESPACE = _{ " " | NEWLINE }
+COMMENT = _{ ";" ~ (!NEWLINE ~ ANY)* ~ NEWLINE }
+
+program = { SOI ~ expr* ~ EOI }
+
+expr = {
+    num | string  | bool | nil | q_expr | s_expr | symbol
+}
+
+num = @{ 
+    ("+" | "-")?  ~ inner_n
+}
+
+inner_n = _{
+    ("0" | ASCII_NONZERO_DIGIT ~ ASCII_DIGIT*)
+    ~ ("." ~ ASCII_DIGIT+)?
+    ~ (^"e" ~ ("+" | "-")? ~ ASCII_DIGIT+)?    
+}
+
+string = ${ normal_string | raw_string }
+    raw_string = {
+        "r" ~ PUSH("#"*) ~ "\""    // push the number signs onto the stack
+        ~ raw_string_interior
+        ~ "\"" ~ POP               // match a quotation mark and the number signs
+    }
+    raw_string_interior = {
+        (
+            !("\"" ~ PEEK)    // unless the next character is a quotation mark
+                              // followed by the correct amount of number signs,
+            ~ ANY             // consume one character
+        )*
+    }
+    normal_string = ${ "\"" ~ inner_s ~ "\"" }
+        inner_s = @{ char* }
+        char = {
+            !("\"" | "\\") ~ ASCII
+            | "\\" ~ ("\"" | "\\" | "/" | "b" | "f" | "n" | "r" | "t")
+            | "\\" ~ ("u" ~ ASCII_HEX_DIGIT{4})
+        }
+
+// s_expr = { PUSH("("+) ~ expr* ~ POP }
+s_expr = { "(" ~ expr* ~ ")" }
+
+bool = { "#t" | "#f" }
+
+nil = { "nil" }
+
+symbol = @{ (letter | digit | arithmetic_ops | comparison_ops | other_ops)+ }
+    letter = { ASCII_ALPHA }
+    digit = { ASCII_DIGIT }
+    arithmetic_ops = { "+" | "-" | "*" | "/" | "%" | "^" }
+    comparison_ops = { "==" | "<" | ">" | "!" }
+    other_ops = { "_" | "&" }
+
+q_expr = { ("quote" | "'") ~ expr* }
+

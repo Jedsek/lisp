@@ -1,0 +1,9 @@
+[package]
+name = "lang"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.86"
+pest = "2.7.10"
+pest_derive = "2.7.10"

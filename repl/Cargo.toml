@@ -1,0 +1,9 @@
+[package]
+name = "repl"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+reedline = "0.32.0"
+lang = { path = "../lang" }
+nu-ansi-term = "0.50.0"
