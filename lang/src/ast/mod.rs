@@ -87,7 +87,7 @@ pub fn eval_expr(expr: &Expr) -> Result<f64> {
     let result = match expr {
         Expr::num(num) => *num,
         Expr::s_expr(exprs) => eval_sexpr(exprs)?,
-        _ => bail!(ERROR),
+        _ => bail!(ERROR), // Fuck you!
     };
     Ok(result)
 }
@@ -99,7 +99,7 @@ pub fn eval_sexpr(exprs: &[Expr]) -> Result<f64> {
         if len == 1 {
             return Ok(*num);
         } else {
-            bail!(ERROR);
+            bail!(ERROR); // Fuck you!
         }
     }
 
@@ -107,10 +107,11 @@ pub fn eval_sexpr(exprs: &[Expr]) -> Result<f64> {
         bail!(ERROR); // Fuck you!
     };
 
-    let args = exprs.iter().skip(1).map(eval_expr);
+    let mut args = exprs.iter().skip(1).map(eval_expr);
 
     let operate = match symbol.as_str() {
         "+" => |acc, e| acc + e,
+        "-" if len == 2 => return args.next().unwrap().map(|s| -s),
         "-" => |acc, e| acc - e,
         "*" => |acc, e| acc * e,
         "/" => |acc, e| acc / e,
