@@ -47,15 +47,15 @@ macro_rules! mk_expr {
     };
 }
 
-fn trim_bracket(s: &str) -> &str {
-    fn trim_bracket_inner(s: &str, right_pos: usize) -> &str {
+fn trim_bracket_outer(s: &str) -> &str {
+    fn trim_recursive(s: &str, right_pos: usize) -> &str {
         if s.starts_with("((") && s.ends_with("))") {
-            trim_bracket_inner(&s[1..right_pos], right_pos - 1)
+            trim_recursive(&s[1..right_pos], right_pos - 1)
         } else {
             s
         }
     }
-    trim_bracket_inner(s, s.len() - 1)
+    trim_recursive(s, s.len() - 1)
 }
 
 pub fn from(parsed_exprs: Pair<Rule>) -> Result<Vec<Expr>> {
@@ -68,10 +68,10 @@ pub fn from(parsed_exprs: Pair<Rule>) -> Result<Vec<Expr>> {
                 num => inner_expr.as_str().parse()?
                 string => inner_expr.as_str().to_string()
                 bool => inner_expr.as_str() == "#t"
-                // q_expr => from(inner_expr)?
+                q_expr => from(inner_expr)?
                 // s_expr => from(inner_expr)?
-                s_expr | q_expr => {
-                    let s_expr = LangParser::parse(Rule::s_expr, trim_bracket(inner_expr.as_str()))?.next().unwrap();
+                s_expr => {
+                    let s_expr = LangParser::parse(Rule::s_expr, trim_bracket_outer(inner_expr.as_str()))?.next().unwrap();
                     from(s_expr)?
                 }
                 symbol => inner_expr.as_str().to_string()
