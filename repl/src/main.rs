@@ -34,7 +34,7 @@ fn main() {
                 }
                 ":d" | ":debug" => state.debug_toggle(),
                 content => {
-                    let result = lang::eval_expr(content, false);
+                    let result = lang::eval(content, false);
                     match result {
                         Ok(result) => println!("{}\n", result),
                         Err(err) => eprintln!("{}\n", err),

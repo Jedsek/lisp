@@ -7,15 +7,12 @@ expr = {
     num | string  | bool | nil | q_expr | s_expr | symbol
 }
 
-num = @{ 
-    ("+" | "-")?  ~ inner_n
-}
-
-inner_n = _{
-    ("0" | ASCII_NONZERO_DIGIT ~ ASCII_DIGIT*)
-    ~ ("." ~ ASCII_DIGIT+)?
-    ~ (^"e" ~ ("+" | "-")? ~ ASCII_DIGIT+)?    
-}
+num = @{ ("+" | "-")?  ~ inner_number }
+    inner_number = _{
+        ("0" | ASCII_NONZERO_DIGIT ~ ASCII_DIGIT*)
+        ~ ("." ~ ASCII_DIGIT+)?
+        ~ (^"e" ~ ("+" | "-")? ~ ASCII_DIGIT+)?    
+    }
 
 string = ${ normal_string | raw_string }
     raw_string = {
@@ -30,8 +27,8 @@ string = ${ normal_string | raw_string }
             ~ ANY             // consume one character
         )*
     }
-    normal_string = ${ "\"" ~ inner_s ~ "\"" }
-        inner_s = @{ char* }
+    normal_string = ${ "\"" ~ inner_string ~ "\"" }
+        inner_string = @{ char* }
         char = {
             !("\"" | "\\") ~ ASCII
             | "\\" ~ ("\"" | "\\" | "/" | "b" | "f" | "n" | "r" | "t")
@@ -49,8 +46,8 @@ symbol = @{ (letter | digit | arithmetic_ops | comparison_ops | other_ops)+ }
     letter = { ASCII_ALPHA }
     digit = { ASCII_DIGIT }
     arithmetic_ops = { "+" | "-" | "*" | "/" | "%" | "^" }
-    comparison_ops = { "==" | "<" | ">" | "!" }
+    comparison_ops = { "=" | "<" | ">" | "!" }
     other_ops = { "_" | "&" }
 
-q_expr = { ("quote" | "'") ~ expr* }
+q_expr = { "{" ~ expr* ~ "}" }
 

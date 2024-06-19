@@ -230,6 +230,7 @@ dependencies = [
  "anyhow",
  "pest",
  "pest_derive",
+ "thiserror",
 ]
 
 [[package]]
