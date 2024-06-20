@@ -23,13 +23,13 @@ Type `cargo r -p repl` in workspace root dir.
 ; Fibonacci sequence
 ; Calculate it with the recursive way
 (def fib (fn n (
-	; If n == 0 or n == 1, return 
-	if (= n 0) 0 (
-	if (= n 1) 1 (
+  ; If n == 0 or n == 1, return 
+  if (= n 0) 0 (
+  if (= n 1) 1 (
 
-	; If n > 1, return `fib(n - 1) + fib(n - 2)`
-	(+ (fib (- n 1))
-		 (fib (- n 2)))	)
+  ; If n > 1, return `fib(n - 1) + fib(n - 2)`
+  (+ (fib (- n 1))
+     (fib (- n 2))))
 ))))
 
 ; Print the result with newline
