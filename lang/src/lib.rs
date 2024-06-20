@@ -1,10 +1,14 @@
-#![feature(iterator_try_reduce)]
 #![feature(iter_map_windows)]
+#![feature(iterator_try_reduce)]
 
 pub mod ast;
+pub mod builtin;
 pub mod env;
+pub mod eval;
+pub mod utils;
 
 use ast::Expr;
+use env::Env;
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
 use thiserror::Error;
@@ -23,6 +27,12 @@ pub enum LangError {
 
     #[error("Invalid symbol: {0}")]
     InvalidSymbol(String),
+
+    #[error("Invalid length of arguments")]
+    InvalidArgsLen,
+
+    #[error("Invalid condition")]
+    InvalidCondition,
 
     #[error("{0}")]
     Other(String),
@@ -52,14 +62,14 @@ OH MY GOD WHY THE FUCK DOES ANYONE REALLY READ ALL OF THIS Mister/Ms. YOU ARE FU
 
 pub type LangResult<T> = Result<T, LangError>;
 
-pub fn eval(input: &str, _debug_mode: bool) -> LangResult<Expr> {
+pub fn eval(input: &str, env: Env, _debug_mode: bool) -> LangResult<Expr> {
     let parsed = LangParser::parse(Rule::program, input)
         .map_err(|e| LangError::ParseFailed(format!("{e}")))?
         .next()
         .unwrap();
     let ast = ast::from(parsed).map_err(|e| LangError::ParseFailed(format!("{e}")))?;
     let expr = ast.first().unwrap();
-    let expr = crate::env::eval(expr, &mut crate::env::Env::default())?;
+    let expr = crate::eval::eval(expr, env)?;
     Ok(expr)
 }
 

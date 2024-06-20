@@ -1,150 +1,69 @@
-#![allow(unused)]
+use crate::{ast::Expr, builtin};
+use std::{cell::RefCell, collections::HashMap, rc::Rc};
 
-use anyhow::ensure;
+pub type Env = Rc<RefCell<EnvInner>>;
+pub type SymbolName = String;
 
-use crate::{ast::Expr, LangError, LangResult};
-use std::{cell::RefCell, collections::HashMap, convert::identity, rc::Rc};
-
-type SymbolName = String;
-
-#[derive(Debug)]
-pub struct Env {
-    parent: Option<Rc<RefCell<Env>>>,
+#[derive(Debug, Clone)]
+pub struct EnvInner {
+    parent: Option<Env>,
     local: HashMap<SymbolName, Expr>,
 }
 
-pub trait Lambda {
-    fn apply(env: &mut Env, args: Vec<Expr>) -> Option<f64>
-    where
-        Self: Sized;
-}
-
-fn parse_single_float(exp: &Expr) -> LangResult<f64> {
-    match exp {
-        Expr::Num(num) => Ok(*num),
-        _ => Err(LangError::Other("expected a number".into())),
+#[allow(clippy::new_ret_no_self)]
+pub trait EnvExt {
+    fn default_env() -> Env {
+        default()
     }
-}
-fn parse_list_of_floats(args: &[Expr]) -> LangResult<Vec<f64>> {
-    args.iter().map(parse_single_float).collect()
+
+    fn new_env(local: HashMap<SymbolName, Expr>, parent: Option<Env>) -> Env {
+        let env = EnvInner::new_with(local, parent);
+        Rc::new(RefCell::new(env))
+    }
+
+    fn define(&self, symbol: SymbolName, value: Expr);
+    fn undefine(&self, symbol: SymbolName);
+    fn get(&self, symbol: SymbolName) -> Option<Expr>;
 }
 
-pub fn eval(expr: &Expr, env: &mut Env) -> LangResult<Expr> {
-    match expr {
-        Expr::Symbol(s) => env
-            .local
-            .get(s)
-            .ok_or(LangError::InvalidSymbol(s.to_string()))
-            .cloned(),
-        Expr::Num(_) | Expr::Bool(_) => Ok(expr.clone()),
-        Expr::SExpr(s_expr) => {
-            let first = s_expr.first().unwrap();
-            let args = &s_expr[1..];
-            match eval(first, env)? {
-                Expr::Fn(f) => {
-                    let args = args
-                        .iter()
-                        .map(|x| eval(x, env))
-                        .collect::<LangResult<Vec<Expr>>>()?;
-                    f(&args)
-                }
-                _ => unimplemented!(),
-            }
-        }
+impl EnvExt for Env {
+    fn define(&self, symbol: SymbolName, value: Expr) {
+        self.borrow_mut().define(symbol, value);
+    }
 
-        _ => unimplemented!(),
+    fn undefine(&self, symbol: SymbolName) {
+        self.borrow_mut().undefine(symbol);
+    }
+
+    fn get(&self, symbol: SymbolName) -> Option<Expr> {
+        self.borrow().get(symbol)
     }
 }
 
-fn ensure<F>(args: &[Expr], f: F) -> bool
-where
-    F: Fn(&&f64, &&f64) -> bool,
-{
-    let args = parse_list_of_floats(args).unwrap();
-    let result = args.iter().map_windows(|[x, y]| f(x, y)).all(identity);
-    result
+fn default() -> Env {
+    let env = EnvInner {
+        parent: None,
+        local: HashMap::new(),
+    };
+    let env = Rc::new(RefCell::new(env));
+    builtin::define_operaters(env.clone());
+    env
 }
 
-impl Default for Env {
-    fn default() -> Self {
-        let mut env = Self {
-            parent: None,
-            local: HashMap::new(),
-        };
-        env.define(
-            "+".into(),
-            Expr::Fn(|args| {
-                let sum = parse_list_of_floats(args)?
-                    .iter()
-                    .fold(0.0, |acc, e| acc + e);
-                Ok(Expr::Num(sum))
-            }),
-        );
-        env.define(
-            "-".into(),
-            Expr::Fn(|args| {
-                let first = parse_single_float(&args[0])?;
-                let sum_rest = parse_list_of_floats(&args[1..])?
-                    .iter()
-                    .fold(0.0, |acc, e| acc + e);
-                Ok(Expr::Num(first - sum_rest))
-            }),
-        );
-        env.define(
-            "=".into(),
-            Expr::Fn(|args| {
-                let result = ensure(args, |x, y| x == y);
-                Ok(Expr::Bool(result))
-            }),
-        );
-
-        env.define(
-            ">".into(),
-            Expr::Fn(|args| {
-                let result = ensure(args, |x, y| x > y);
-                Ok(Expr::Bool(result))
-            }),
-        );
-        env.define(
-            ">=".into(),
-            Expr::Fn(|args| {
-                let result = ensure(args, |x, y| x >= y);
-                Ok(Expr::Bool(result))
-            }),
-        );
-        env.define(
-            "<".into(),
-            Expr::Fn(|args| {
-                let result = ensure(args, |x, y| x < y);
-                Ok(Expr::Bool(result))
-            }),
-        );
-        env.define(
-            "<=".into(),
-            Expr::Fn(|args| {
-                let result = ensure(args, |x, y| x <= y);
-                Ok(Expr::Bool(result))
-            }),
-        );
-        env
-    }
-}
-
-impl Env {
-    pub fn new() -> Self {
-        Self::default()
+impl EnvInner {
+    pub fn new_with(local: HashMap<SymbolName, Expr>, parent: Option<Env>) -> Self {
+        Self { local, parent }
     }
 
-    pub fn extend(parent: Rc<RefCell<Env>>) -> Self {
-        Self {
-            parent: Some(parent),
-            ..Self::new()
-        }
-    }
+    // pub fn extend(parent: Env) -> Self {
+    //     Self {
+    //         parent: Some(parent),
+    //         ..Self::default()
+    //     }
+    // }
 
-    pub fn define(&mut self, symbol: SymbolName, lambda: Expr) -> LangResult<()> {
-        self.local.insert(symbol, lambda);
-        Ok(())
+    pub fn define(&mut self, symbol: SymbolName, value: Expr) {
+        self.local.insert(symbol, value);
     }
 
     pub fn undefine(&mut self, symbol: SymbolName) {
@@ -154,7 +73,13 @@ impl Env {
             parent.borrow_mut().undefine(symbol);
         }
     }
-    pub fn get(&mut self, symbol: SymbolName) -> Option<Expr> {
-        self.local.get(&symbol).cloned()
+    pub fn get(&self, symbol: SymbolName) -> Option<Expr> {
+        match self.local.get(&symbol) {
+            Some(value) => Some(value.clone()),
+            None => match &self.parent {
+                None => None,
+                Some(parent) => parent.borrow_mut().get(symbol),
+            },
+        }
     }
 }

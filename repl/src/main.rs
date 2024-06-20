@@ -1,6 +1,7 @@
 mod config;
 
 use config::{CustomPrompt, LineEditorBuilder};
+use lang::env::{Env, EnvExt};
 use reedline::{FileBackedHistory, Reedline, Signal};
 
 #[derive(Default)]
@@ -21,20 +22,21 @@ fn main() {
     let mut state = State::default();
     let mut line_editor = line_editor();
     let prompt = CustomPrompt::default();
+    let env = Env::default_env();
 
     loop {
         let line = line_editor.read_line(&prompt);
         match line {
-            Ok(Signal::CtrlD | Signal::CtrlC) => exit(),
+            Ok(Signal::CtrlD | Signal::CtrlC) => break,
             Ok(Signal::Success(buffer)) if !buffer.is_empty() => match buffer.as_str() {
-                ":e" | ":q" | ":exit" | ":quit" => exit(),
+                ":e" | ":q" | ":exit" | ":quit" => break,
                 ":h" | ":help" => print_helps_verbose(),
                 ":c" | ":clear" => {
                     line_editor.clear_screen().ok();
                 }
                 ":d" | ":debug" => state.debug_toggle(),
                 content => {
-                    let result = lang::eval(content, false);
+                    let result = lang::eval(content, env.clone(), false);
                     match result {
                         Ok(result) => println!("{}\n", result),
                         Err(err) => eprintln!("{}\n", err),
@@ -44,19 +46,8 @@ fn main() {
             _ => (),
         }
     }
-}
 
-// fn clear() {
-//     #[cfg(target_os = "linux")]
-//     std::process::Command::new("clear").status().unwrap();
-
-//     #[cfg(target_os = "windows")]
-//     std::process::Command::new("cls").status().unwrap();
-// }
-
-fn exit() {
     println!("\nAborted");
-    std::process::exit(0);
 }
 
 fn print_helps() {
@@ -70,7 +61,7 @@ fn print_helps() {
 
 fn print_helps_verbose() {
     println!(
-        "Lisp v0.0.1
+        r#"Lisp v0.0.1
 ● emacs-like keybinding is enabled default
 ● type `:h | :help` for verbose help infomations
 ● type `:c | :clear` for clearing screen
@@ -91,7 +82,15 @@ Example code:
 
 > (+ 1 2 3 4 5 (- (* 2 2 (/ 9 4.5))))
 7
-"
+
+> (def a 1)
+a
+> (+ a 1)
+2
+
+> (if (< 1 2 3 4 5) "Yes" "No")
+"Yes"
+"#
     )
 }
 

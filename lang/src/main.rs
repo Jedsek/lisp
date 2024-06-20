@@ -1,7 +1,12 @@
 #![allow(unused)]
 
 use anyhow::Result;
-use lang::{ast, LangParser, LangResult, Rule};
+use lang::{
+    ast,
+    env::{Env, EnvExt},
+    eval::eval,
+    LangParser, LangResult, Rule,
+};
 use pest::Parser;
 use std::fs;
 
@@ -15,14 +20,11 @@ fn main() -> LangResult<()> {
     // debug(parsed_exprs.clone());
 
     let ast = ast::from(parsed_exprs)?;
+    let env = Env::default_env();
 
-    // for expr in ast {
-    //     let result = ast::eval_expr(&expr);
-    //     match result {
-    //         Ok(result) => println!("{}", result),
-    //         Err(err) => eprintln!("{}", err),
-    //     }
-    // }
+    for expr in ast {
+        eval(&expr, env.clone());
+    }
 
     Ok(())
 }

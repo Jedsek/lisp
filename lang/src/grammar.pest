@@ -1,4 +1,4 @@
-WHITESPACE = _{ " " | NEWLINE }
+WHITESPACE = _{ " " | "\t" |NEWLINE }
 COMMENT = _{ ";" ~ (!NEWLINE ~ ANY)* ~ NEWLINE }
 
 program = { SOI ~ expr* ~ EOI }
@@ -15,7 +15,7 @@ num = @{ ("+" | "-")?  ~ inner_number }
     }
 
 string = ${ normal_string | raw_string }
-    raw_string = {
+    raw_string = _{
         "r" ~ PUSH("#"*) ~ "\""    // push the number signs onto the stack
         ~ raw_string_interior
         ~ "\"" ~ POP               // match a quotation mark and the number signs
@@ -27,7 +27,7 @@ string = ${ normal_string | raw_string }
             ~ ANY             // consume one character
         )*
     }
-    normal_string = ${ "\"" ~ inner_string ~ "\"" }
+    normal_string = _{ "\"" ~ inner_string ~ "\"" }
         inner_string = @{ char* }
         char = {
             !("\"" | "\\") ~ ASCII
