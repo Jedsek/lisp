@@ -5,7 +5,6 @@ use crate::{LangError, LangParser, LangResult, Rule};
 use pest::iterators::Pair;
 use pest::Parser;
 
-#[allow(dead_code)]
 #[derive(Debug, Clone, PartialEq, PartialOrd)]
 pub enum Expr {
     Nil,
@@ -17,6 +16,19 @@ pub enum Expr {
     Symbol(String),
     Fn(fn(&[Expr]) -> LangResult<Expr>),
     Lambda(Lambda),
+}
+
+#[derive(Debug, Copy, Clone, PartialEq, PartialOrd, Eq, Ord)]
+pub enum ExprType {
+    Nil,
+    Num,
+    String,
+    Bool,
+    QExpr,
+    SExpr,
+    Symbol,
+    Fn,
+    Lambda,
 }
 
 #[derive(Debug, Clone, PartialEq, PartialOrd)]

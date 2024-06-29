@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-anyhow = "1.0.86"
+inkwell = { version = "0.4.0", features = ["llvm17-0-prefer-static"] }
 indexmap = "2.2.6"
 lru = "0.12.3"
 pest = "2.7.10"

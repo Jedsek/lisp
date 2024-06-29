@@ -1,6 +1,5 @@
 #![allow(unused)]
 
-use anyhow::Result;
 use lang::{ast, env::Env, eval::eval, LangParser, LangResult, Rule};
 use pest::Parser;
 use std::fs;
