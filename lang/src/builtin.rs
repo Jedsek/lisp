@@ -24,7 +24,7 @@ fn define_list(env: &mut Env) {
         ($a:expr => $n:expr) => {
             env.define($a.into(), Expr::Fn(|args| {
                 let first = args.first().cloned().ok_or(LangError::InvalidArgsLen)?;
-                let args = first.inner_q_expr()?;
+                let args = first.inner_q_expr()?.clone();
                 Ok(match *args {
                     Expr::SExpr(args) => args.get($n).cloned().ok_or(LangError::InvalidArgsLen)?,
                     e => e,

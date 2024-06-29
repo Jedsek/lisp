@@ -27,9 +27,9 @@ pub struct Lambda {
 
 macro_rules! to {
     ($name:ident => $pat:ident($inner:ident) => $t:ty) => {
-        pub fn $name(&self) -> LangResult<$t> {
+        pub fn $name(&self) -> LangResult<&$t> {
             match self {
-                Expr::$pat($inner) => Ok($inner.clone()),
+                Expr::$pat($inner) => Ok($inner),
                 _ => Err(LangError::TypeMismatched),
             }
         }

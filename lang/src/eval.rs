@@ -61,17 +61,21 @@ fn eval_keyword(expr: &Expr, args: &[Expr], env: &mut Env) -> Option<LangResult<
 }
 
 fn eval_cond(args: &[Expr], env: &mut Env) -> Result<Expr, LangError> {
-    // env.define("else".into(), Expr::Bool(true));
-
-    let len = args.len();
-    if len < 2 {
+    if args.len() < 2 {
         return Err(LangError::InvalidArgsLen);
     }
-    let conds = &args[..(len - 1)];
-    for cond in conds {
+    for cond in args {
         match cond {
             Expr::SExpr(s_expr) => {
                 // println!("{s_expr:?}");
+                if s_expr.len() != 2 {
+                    return Err(LangError::InvalidArgsLen);
+                }
+                if let Expr::Symbol(s) = &s_expr[0] {
+                    if s == "else" {
+                        return eval(&s_expr[1], env);
+                    }
+                }
                 match eval(&s_expr[0], env)? {
                     Expr::Bool(true) => return eval(&s_expr[1], env),
                     Expr::Bool(false) => continue,
@@ -104,7 +108,7 @@ fn eval_if(args: &[Expr], env: &mut Env) -> LangResult<Expr> {
     let cond = eval(&args[0], env)?;
     let cond = cond.inner_bool()?;
 
-    let idx = if cond { 1 } else { 2 };
+    let idx = if *cond { 1 } else { 2 };
     let result = &args[idx];
     eval(result, env)
 }
@@ -120,7 +124,7 @@ fn eval_def(args: &[Expr], env: &mut Env) -> LangResult<Expr> {
         }
 
         let symbol = &function[0];
-        let symbol_name = symbol.inner_symbol()?;
+        let symbol_name = symbol.inner_symbol()?.clone();
 
         let params = &function[1..];
         let params = Expr::SExpr(params.to_vec());
@@ -132,7 +136,7 @@ fn eval_def(args: &[Expr], env: &mut Env) -> LangResult<Expr> {
     }
 
     let symbol = &args[0].clone();
-    let symbol_name = symbol.inner_symbol()?;
+    let symbol_name = symbol.inner_symbol()?.clone();
     let value = eval(&args[1], env)?;
     env.define(symbol_name, value);
     Ok(symbol.clone())
