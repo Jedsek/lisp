@@ -4,4 +4,4 @@
   (+ (fib (- n 1)) (fib (- n 2)))
 ))
 
-(displayln (fib 10))
+(displayln (fib 30))

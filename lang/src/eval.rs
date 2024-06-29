@@ -9,7 +9,7 @@ use crate::{
 
 pub fn eval(expr: &Expr, env: &mut Env) -> LangResult<Expr> {
     match expr {
-        Expr::Symbol(s) => env.get(s.into()).ok_or(LangError::InvalidSymbol(s.into())),
+        Expr::Symbol(s) => env.get(s).ok_or(LangError::InvalidSymbol(s.into())),
         Expr::Num(_) | Expr::Bool(_) | Expr::String(_) | Expr::Nil | Expr::QExpr(_) => {
             Ok(expr.clone())
         }
@@ -101,12 +101,10 @@ fn eval_if(args: &[Expr], env: &mut Env) -> LangResult<Expr> {
         return Err(LangError::InvalidArgsLen);
     }
 
-    let condition = eval(&args[0], env)?;
-    let Expr::Bool(condition) = condition else {
-        return Err(LangError::TypeMismatched);
-    };
+    let cond = eval(&args[0], env)?;
+    let cond = cond.inner_bool()?;
 
-    let idx = if condition { 1 } else { 2 };
+    let idx = if cond { 1 } else { 2 };
     let result = &args[idx];
     eval(result, env)
 }
@@ -122,10 +120,7 @@ fn eval_def(args: &[Expr], env: &mut Env) -> LangResult<Expr> {
         }
 
         let symbol = &function[0];
-        let symbol_name = match symbol {
-            Expr::Symbol(s) => Ok(s.clone()),
-            _ => Err(LangError::InvalidSymbol(format!("{symbol}"))),
-        }?;
+        let symbol_name = symbol.inner_symbol()?;
 
         let params = &function[1..];
         let params = Expr::SExpr(params.to_vec());
@@ -136,13 +131,9 @@ fn eval_def(args: &[Expr], env: &mut Env) -> LangResult<Expr> {
         return Ok(symbol.clone());
     }
 
-    let symbol = &args[0];
-    let symbol_name = match symbol {
-        Expr::Symbol(s) => Ok(s.clone()),
-        _ => Err(LangError::InvalidSymbol(format!("{symbol}"))),
-    }?;
-    let value = &args[1];
-    let value = eval(value, env)?;
+    let symbol = &args[0].clone();
+    let symbol_name = symbol.inner_symbol()?;
+    let value = eval(&args[1], env)?;
     env.define(symbol_name, value);
     Ok(symbol.clone())
 }

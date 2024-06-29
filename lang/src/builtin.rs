@@ -5,7 +5,7 @@ use crate::{
     LangError,
 };
 
-pub fn define_operaters(env: &mut Env) {
+pub fn define_std(env: &mut Env) {
     define_string(env);
     define_list(env);
     define_compare(env);
@@ -23,15 +23,13 @@ fn define_list(env: &mut Env) {
     macro_rules! nth {
         ($a:expr => $n:expr) => {
             env.define($a.into(), Expr::Fn(|args| {
-                let Expr::QExpr(args) = args.first().cloned().ok_or(LangError::InvalidArgsLen)? else {
-                    return Err(LangError::TypeMismatched);
-                };
+                let first = args.first().cloned().ok_or(LangError::InvalidArgsLen)?;
+                let args = first.inner_q_expr()?;
                 Ok(match *args {
                     Expr::SExpr(args) => args.get($n).cloned().ok_or(LangError::InvalidArgsLen)?,
                     e => e,
                 })
-            }),
-            );
+            }));
         };
     }
 
@@ -61,10 +59,7 @@ fn define_other(env: &mut Env) {
             if args.len() < 2 {
                 return Err(LangError::InvalidArgsLen);
             }
-            let cond = match &args[0] {
-                Expr::Bool(cond) => cond,
-                _ => return Err(LangError::TypeMismatched),
-            };
+            let cond = args[0].inner_bool()?;
 
             let result = match cond {
                 true => args.last().cloned().unwrap(),

@@ -72,6 +72,8 @@ pub fn child_env_for_lambda(
     let local = params.into_iter().zip(args);
     let local = Map::from_iter(local);
 
-    let env = Env::new(local, Some(Rc::new(RefCell::new(parent_env.clone()))));
+    let cache = parent_env.cache.clone();
+    let parent = Some(Rc::new(RefCell::new(parent_env.clone())));
+    let env = Env::new(local, parent, cache);
     Ok(env)
 }

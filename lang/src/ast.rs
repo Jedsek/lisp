@@ -25,6 +25,26 @@ pub struct Lambda {
     pub body: Rc<Expr>,
 }
 
+macro_rules! to {
+    ($name:ident => $pat:ident($inner:ident) => $t:ty) => {
+        pub fn $name(&self) -> LangResult<$t> {
+            match self {
+                Expr::$pat($inner) => Ok($inner.clone()),
+                _ => Err(LangError::TypeMismatched),
+            }
+        }
+    };
+}
+
+impl Expr {
+    to!(inner_num => Num(n) => f64);
+    to!(inner_string => String(s) => String);
+    to!(inner_bool => Bool(b) => bool);
+    to!(inner_q_expr => QExpr(q_expr) => Box<Expr>);
+    to!(inner_s_expr => SExpr(s_expr) => Vec<Expr>);
+    to!(inner_symbol => Symbol(s) => String);
+}
+
 impl Display for Expr {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let str = match self {
