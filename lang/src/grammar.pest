@@ -35,8 +35,10 @@ string = ${ normal_string | raw_string }
             | "\\" ~ ("u" ~ ASCII_HEX_DIGIT{4})
         }
 
-// s_expr = { PUSH("("+) ~ expr* ~ POP }
-s_expr = { "(" ~ expr* ~ ")" }
+
+s_expr = { bracket_left ~ expr* ~ bracket_right }
+bracket_left = _{ "(" | "[" | "{" }
+bracket_right = _{ ")" | "]" | "}" }
 
 bool = { "#t" | "#f" }
 
@@ -47,7 +49,7 @@ symbol = @{ (letter | digit | arithmetic_ops | comparison_ops | other_ops)+ }
     digit = { ASCII_DIGIT }
     arithmetic_ops = { "+" | "-" | "*" | "/" | "%" | "^" }
     comparison_ops = { "=" | "<" | ">" | "!" }
-    other_ops = { "_" | "&" }
+    other_ops = { "_" | "&" | "$" | "?" }
 
-q_expr = { "{" ~ expr* ~ "}" }
+q_expr = {  "quote" | "'" ~ expr }
 

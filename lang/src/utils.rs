@@ -1,10 +1,10 @@
 use crate::{
     ast::Expr,
-    env::{Env, EnvExt},
+    env::{Env, Map},
     eval::eval_args,
     LangError, LangResult,
 };
-use std::{collections::HashMap, convert::identity, rc::Rc};
+use std::{cell::RefCell, convert::identity, rc::Rc};
 
 pub fn trim_bracket_outer(s: &str) -> &str {
     fn trim_recursive(s: &str, right_pos: usize) -> &str {
@@ -58,16 +58,20 @@ pub fn parse_list_of_args(args: Rc<Expr>) -> LangResult<Vec<String>> {
     }
 }
 
-pub fn child_env_for_lambda(params: Rc<Expr>, args: &[Expr], parent_env: Env) -> LangResult<Env> {
+pub fn child_env_for_lambda(
+    params: Rc<Expr>,
+    args: &[Expr],
+    parent_env: &mut Env,
+) -> LangResult<Env> {
     let params = parse_list_of_args(params)?;
     if params.len() != args.len() {
         return Err(LangError::InvalidArgsLen);
     }
 
-    let args = eval_args(args, parent_env.clone())?;
+    let args = eval_args(args, parent_env)?;
     let local = params.into_iter().zip(args);
-    let local = HashMap::from_iter(local);
+    let local = Map::from_iter(local);
 
-    let env = Env::new_env(local, Some(parent_env));
+    let env = Env::new(local, Some(Rc::new(RefCell::new(parent_env.clone()))));
     Ok(env)
 }

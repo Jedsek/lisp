@@ -11,7 +11,7 @@ pub struct CustomPrompt(DefaultPrompt);
 
 impl Prompt for CustomPrompt {
     fn render_prompt_left(&self) -> std::borrow::Cow<str> {
-        "lisp".into()
+        "REPL".into()
     }
     fn render_prompt_right(&self) -> std::borrow::Cow<str> {
         self.0.render_prompt_right()
@@ -37,7 +37,7 @@ impl Prompt for CustomPrompt {
 pub struct LineEditorBuilder(pub Reedline);
 
 fn commands() -> Vec<String> {
-    let commands = ["+", "-", "*", "/", "(", ")"];
+    let commands = ["fn", "def", "if"];
     commands.map(String::from).into_iter().collect()
 }
 

@@ -237,3 +237,305 @@ if (= n 0) 0 (if (= n 1) 1 ((+ (fib (- n 1)) (fib (- n 2))))))))
 (println 1)
 (println 2)
 (println 2 3 4)
+(+ 1 1e-1 1e-2 1e-3)
+c
+:d
+:q
+:d
+:c
+:q
+(newline)
+(newline a)
+(newline)
+newline
+λ
+(λ x (+ x 1)
+(λ x (+ x 1))
+(1)
+(def a (fn a 1))
+a 1
+(a 1)
+(a 2)
+(a "1")
+(begin (1) (2) (3))
+(begin (newline) (2) (3))
+(begin (newline) (newline) (3))
+(begin (newline) (newline) (newline))
+(newline)
+(def a 1)
+a
+(a)
+(newline)
+(def a 1)
+a
+(a)
+1
+2
+3
+(1)
+(a)
+(def a 1)
+(a)
+(1)
+(newline)
+(newline newline)
+(newline)
+(newline newline)
+(newline)
+(1)
+(a)
+(1)
+(newline)
+(1)
+(a)
+(def a 1)
+(a)
+a
+1
+(newline)
+(newline
+(newline)
+1
+(begin (newline) (newline) (newline))
+(begin (newline) (newline) (1))
+(when (= 1 1) 1 2)
+(when (= 1 1) 1 2 3)
+(when (= 1 1) 1)
+(when (= 1 1) 1 2 3)
+(def $ 1)
+($)
+(fn 1)
+(fn () 1)
+(fn _ 1)
+(fn () 1)
+(def a (fn () 1))
+(a)
+c
+:c
+(def (fib n) (+ n 1))
+(fib 1
+(fib 1)
+(fib 2)
+(fib 3)
+(def (fib) (+ n 1))
+(fib)
+(fib 1)
+(def (fib n) (+ n 1))
+(fib 1)
+(def (fib) (1))
+(fib)
+(fib 2)
+(cond 1)
+(def (fib n) (cond
+  ((= n 0) 0)
+  ((= n 1) 1)
+  (+ (fib (- n 1)) (fib (- n 2)))
+))
+(def (fib n) (cond  ((= n 0) 0)  ((= n 1) 1)  (+ (fib (- n 1)) (fib (- n 2)))))
+(fib 1)
+(when (= 1 1) 1)
+((+ 1 2) 1)
+(1)
+((+ 1 2) 1)
+(cond ((= 1) 1)
+(cond ((= 1) 1))
+(cond ((= 1) 1) 2)
+(cond ((= 1) 1) (= 1 ) 2)
+(cond ((= 1) 1) (= 1 2) 2)
+(cond ((= 1) 1) (= 1) 2)
+(= 1)
+(cond ((= 1) 1) (= 1) 2)
+(cond ((!= 1) 1) (= 1) 2)
+(cond ((!= 1) 1) 2)
+(cond ((!= 1 2) 1) 2)
+(cond ((!= 1 2) 1) 1)
+(!= 1 2)
+(!= 1 2 3)
+(! 1 2)
+(= 1 2)
+(cond ((= 1 2) 1) 1)
+(cond ((= 1 2) 1) 2)
+(cond ((= 1 2) 1) ((= 3 4) 3) 4 )
+(cond ((= 1 2) 1) ((= 3 3) 3) 4 )
+(cond ((= 1 2) 1) ((3) 3) 4 )
+(cond ((= 1 2) 1) ((3) 3) (1 2))
+(cond ((= 1 2) 1) ((= 3) 3) (1 2))
+(cond ((= 1 2) 1) ((= 3 4) 3) (1 2))
+(cond ((= 1 2) 1) ((= 3 3) (1 2 3)) (1 2))
+(cond ((= 1 2) 1) ((= 3) (1 2 3)) (1 2))
+(cond ((= 1 2) 1) ((= 3 3) (1 2 3)) (1 2))
+(cond ((= 1 2) 1) ((= 3 3) 1) (1 2))
+(cond ((= 1 2) 1) ((= 3 3) (1)) (1 2))
+(cond ((= 1 2) 1) ((= 3 3) (1 2)) (1 2))
+(cond ((= 1 2) 1) ((= 3 3) (1 2 3)) (1 2))
+(cond ((= 1 2) 1) ((= 3 3) 2) (1 2))
+(cond ((= 1 2) 1) ((= 3 3) 3) (1 2))
+(cond ((= 1 2) 1) ((= 3 3) (1 2)) (1 2))
+(1)
+((1))
+((+ 1 2))
+(cond ((= 1 2) 1) ((= 3 3) (1 2)) (1 2))
+(cond ((= 1 2) 1) ((= 3 3) (1 2 3)) (1 2))
+((+ 1 2))
+(((+ 1 2)))
+((((+ 1 2))))
+c
+((+ 1 ((- 1 2))))
+(cond ((= 1 2) 1) ((= 3 3) (1 2 3)) (1 2))
+:w
+c
+(cond ((= 1 2) 1) ((= 3 3) (+ 2 3)) (1 2))
+(cond ((= 1 2) 1) ((= 3 3) ((1 2 3))) (1 2))
+:c
+:h
+(define (goldilocks n smallest-ok biggest-ok)        (if (< n smallest-ok)            "Too small!"            (if (> n biggest-ok)                "Too big!"                "Just right!")))
+(def (goldilocks n smallest-ok biggest-ok)        (if (< n smallest-ok)            "Too small!"            (if (> n biggest-ok)                "Too big!"                "Just right!")))
+(goldilocks 3 10 20)
+(+ (1 2))
+(+ 1 2 $ - 1 2)
+(+ 1 2 ( - 1 2))
+(+ 1 2 $ - 1 2)
+(())
+()
+(())
+(((())))
+($)
+($$)
+($$$$)
+($$)
+($$$$)
+(+ 1 2 $ - 2)
+(+ 1 2 $ - 2 3)
+(+ 1 2 $ - $ 1)
+(+ 1 2 $ - $ 1 2)
+(+ 1 2 $ - $ + 1 2)
+(+ 1 2 $ - $ + 1 2 3)
+(+ 1 2 $ - $ + 1 2 3 4)
+(list)
+(list 1 2 3)
+(list 1 2 3 4 5)
+(list 1 2 "cat" 33.8 'foo)
+'1
+'1 2
+'(1 2 3)
+'1
+'1 2 3
+'1
+'1 2
+'(1 2 )
+'(1 2)
+1 2
+1 2 3
+$0
+1 2 3 4
+$0
+$1
+(+ $0 $1)
+1 2  3
+(+ $0 $1 $2)
+c
+(lambda (x) (* x 2))
+'(lambda (x) (* x 2))
+($0 1)
+(lambda (x) (* x 2))
+(lambda n (* x 2))
+$1 0
+($1 0)
+(lambda (x) (* x 2))
+$4 0
+($4 0)
+($4 1)
+c
+:c
+c
+:c
+(def a 1)
+(a)
+((a))
+(define (greet name)  (string-append "Hello " name "!"))
+(def (greet name)  (string-append "Hello " name "!"))
+(greet "s")
+(def (greet name)  (string-append "Hello " name "!"))
+(greet "s")
+1 2 3 4
+(lambda a (+ a $0 $1 $2 $3)) 
+($4 5)
+(list 1 2 3 4 "str" #t (list 1 2 3))
+(+ 1)
+(+ 1 2 3 4)
+(def close-enough? 2)
+(define close-enough? 2)
+(close-enough?)
+:l 1
+(+ 1 2 3 4)
+:l test.lisp
+(+ 1 2 3 4)
+:l test.lisp
+c
+:l test.lisp
+c
+:l test.lisp
+(fib n)
+(fib 1)
+(fib 2)
+(+ 1 2)
+:q
+(+ 1 2)
+:l test.lisp
+(greet "s")
+:l test.lisp
+(fib 2)
+:l test.lisp
+(fib 2)
+:l test.lisp
+(fib 2)
+:l test.lisp
+(fib 2)
+:l test.lisp
+(greet "s")
+c
+:c
+(define (f g) (g 2))
+(f 2)
+(define (inc a) (+ a 1))
+(inc 1)
+(f inc)
+(f f)
+(+ 1 2)
+(define (inc a) (+ a 1))
+(inc 1)
+(define (inc a b) (+ a b))
+(inc 1 2)
+:d
+(define a 1)
+a
+'1
+'q
+'(1 a d)
+(list 1 23)
+(list (1 23))
+'(1 2 3)
+(list 1 2 3)
+(list 1)
+(list 1 2 3)
+(list 1 2 (+ 1 2))
+'(1 2 3)
+(define a '(1 2 3))
+(car a)
+(list)
+(list 1 2 3)
+('1 2 )
+'1
+'2
+'(1 2 3)
+(car '(1 2 3))
+(define a '(1 2 3))
+(car a)
+(cdr a)
+(cadr a)
+(car '1)
+(car '2)
+(car '(1 2))
+(car '(a 2))
+[list 1 23]
+[list 1 23)

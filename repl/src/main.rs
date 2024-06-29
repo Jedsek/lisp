@@ -1,18 +1,20 @@
 mod config;
 
 use config::{CustomPrompt, LineEditorBuilder};
-use lang::env::{Env, EnvExt};
+use lang::{ast::Expr, env::Env};
 use reedline::{FileBackedHistory, Reedline, Signal};
+use std::fs;
 
 #[derive(Default)]
 struct State {
     debug_enabled: bool,
+    id: usize,
 }
 
 impl State {
     fn debug_toggle(&mut self) {
         self.debug_enabled = !self.debug_enabled;
-        println!("debug enabled: {} now", self.debug_enabled);
+        println!("debug enabled: {}\n", self.debug_enabled);
     }
 }
 
@@ -21,8 +23,8 @@ fn main() {
 
     let mut state = State::default();
     let mut line_editor = line_editor();
+    let mut env = Env::default();
     let prompt = CustomPrompt::default();
-    let env = Env::default_env();
 
     loop {
         let line = line_editor.read_line(&prompt);
@@ -36,10 +38,36 @@ fn main() {
                 }
                 ":d" | ":debug" => state.debug_toggle(),
                 content => {
-                    let result = lang::eval(content, env.clone(), false);
-                    match result {
-                        Ok(result) => println!("{}\n", result),
+                    let args = content.split(' ').collect::<Vec<_>>();
+                    let input = if args[0] == ":l" {
+                        fs::read_to_string(args[1]).unwrap()
+                    } else {
+                        content.to_string()
+                    };
+                    match lang::eval(&input, &mut env, false) {
                         Err(err) => eprintln!("{}\n", err),
+                        Ok(exprs) => {
+                            for expr in exprs {
+                                match expr {
+                                    Err(err) => eprintln!("{}\n", err),
+                                    Ok(expr) => {
+                                        let id = state.id;
+                                        if state.debug_enabled {
+                                            println!("${id} = {expr}");
+                                        } else if args[0] != ":l" {
+                                            println!("{expr}");
+                                        } else if args[0] == ":l" {
+                                            if let Expr::Symbol(ref symbol) = expr {
+                                                println!("{symbol}");
+                                            }
+                                        }
+                                        env.define(format!("${id}"), expr);
+                                        state.id += 1;
+                                    }
+                                }
+                            }
+                            println!();
+                        }
                     }
                 }
             },

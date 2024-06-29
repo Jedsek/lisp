@@ -1,39 +1,91 @@
 # Lisp 
 
-(WIP)
+## Intro
 
-Type `cargo r -p repl` in workspace root dir.
+My toy lisp language.  
 
-- Examples:
+Type `cargo r -p repl` to start REPL.  
+Type `cargo r -p lang examples/plug.lisp` to run example code.
 
-```lisp
-; 15
-(+ 1 2 3 4 5) 
+## Examples:
 
-; 1.1111
-(+ 1 1e-1 1e-2 1e-3 1e-4)
+- fib.lisp:
 
-; #f
-(> 1 2 3 4 5)
+```scheme
+(define (fib n) (cond
+  ((= n 0) 0)
+  ((= n 1) 1)
+  (+ (fib (- n 1)) (fib (- n 2)))
+))
 
-; #t
-(= 1 1 1 1 1)
+(displayln (fib 10))
+```
 
+- big-sum.lisp:
 
-; Fibonacci sequence
-; Calculate it with the recursive way
-(def fib (fn n (
-  ; If n == 0 or n == 1, return 
-  if (= n 0) 0 (
-  if (= n 1) 1 (
+```scheme
+(define (min x y)
+  (if (< x y) x y))
 
-  ; If n > 1, return `fib(n - 1) + fib(n - 2)`
-  (+ (fib (- n 1))
-     (fib (- n 2))))
-))))
+(define (big-sum x y z)
+    (- (+ x y z)
+       (min (min x y) z)))
+  
+(displayln (big-sum 2 3 4))
+```
 
-; Print the result with newline
-(println (fib 10))
+- sqrt.lisp:
+
+```scheme
+(define (square x)
+  (* x x))
+
+(define (abs x)
+  (if (> x 0) x (- x)))
+
+(define (average x y)
+  (/ (+ x y) 2))
+
+(define (improve guess x)
+  (average guess (/ x guess)))
+
+(define (good-enough? old-guess guess)
+  (> 0.01
+    (/ (abs (- guess old-guess))
+        old-guess)))
+
+(define (sqrt-iter guess x)
+  (if (good-enough? guess (improve guess x))
+    (improve guess x)
+    (sqrt-iter (improve guess x) x)))
+
+(define (sqrt x)
+  (sqrt-iter 1.0 x))
+
+(displayln (sqrt 2))
+```
+
+- plus.lisp:
+
+```scheme
+(define (inc n)
+  (+ n 1))
+
+(define (dec n)
+  (- n 1))
+
+(define (plus1 a b)
+  (if (= a 0)
+    b
+    (inc (plus1 (dec a) b))))
+
+(define (plus2 a b)
+  (if (= a 0)
+    b
+    (plus2 (dec a) (inc b))))
+
+(displayln (plus1 4 5))
+(displayln (plus2 4 5))
 ```
 
 # Showcase

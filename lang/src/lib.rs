@@ -3,6 +3,7 @@
 
 pub mod ast;
 pub mod builtin;
+pub mod codegen;
 pub mod env;
 pub mod eval;
 pub mod utils;
@@ -31,8 +32,8 @@ pub enum LangError {
     #[error("Invalid length of arguments")]
     InvalidArgsLen,
 
-    #[error("Invalid condition")]
-    InvalidCondition,
+    #[error("Type mismatched")]
+    TypeMismatched,
 
     #[error("{0}")]
     Other(String),
@@ -55,22 +56,21 @@ It suddenly makes people realize that such an ugly and dirty lisp interpreter is
 You forced a naive, beautiful compiler that is still in its youth.
 Just like ignoring the minor protection law of XXX state, destroying its vision and yearning for a better future.
 
-OH MY GOD WHY THE FUCK DOES ANYONE REALLY READ ALL OF THIS Mister/Ms. YOU ARE FUCKING BORING AND I AM FUCKING BORING TOO FUCK IT!
+oH MY GOD WHY THE FUCK DOES ANYONE REALLY READ ALL OF THIS Mister/Ms. YOU ARE FUCKING BORING AND I AM FUCKING BORING TOO FUCK IT!
 ")]
     FuckYou,
 }
 
 pub type LangResult<T> = Result<T, LangError>;
 
-pub fn eval(input: &str, env: Env, _debug_mode: bool) -> LangResult<Expr> {
+pub fn eval(input: &str, env: &mut Env, _debug_mode: bool) -> LangResult<Vec<LangResult<Expr>>> {
     let parsed = LangParser::parse(Rule::program, input)
         .map_err(|e| LangError::ParseFailed(format!("{e}")))?
         .next()
         .unwrap();
-    let ast = ast::from(parsed).map_err(|e| LangError::ParseFailed(format!("{e}")))?;
-    let expr = ast.first().unwrap();
-    let expr = crate::eval::eval(expr, env)?;
-    Ok(expr)
+    let ast = ast::from(parsed);
+    // println!("{ast:#?}");
+    ast.map(|exprs| exprs.into_iter().map(|e| eval::eval(&e, env)).collect())
 }
 
 pub fn debug(parsed_exprs: Pair<Rule>) {

@@ -1,17 +1,14 @@
 #![allow(unused)]
 
 use anyhow::Result;
-use lang::{
-    ast,
-    env::{Env, EnvExt},
-    eval::eval,
-    LangParser, LangResult, Rule,
-};
+use lang::{ast, env::Env, eval::eval, LangParser, LangResult, Rule};
 use pest::Parser;
 use std::fs;
 
 fn main() -> LangResult<()> {
-    let input = fs::read_to_string("test.lisp").expect("Failed to read file");
+    let path = std::env::args().nth(1).unwrap_or("test.lisp".into());
+    let input = fs::read_to_string(path).expect("Failed to read file");
+
     let parsed_exprs = LangParser::parse(Rule::program, &input)
         .expect("Failed to parse")
         .next()
@@ -20,10 +17,10 @@ fn main() -> LangResult<()> {
     // debug(parsed_exprs.clone());
 
     let ast = ast::from(parsed_exprs)?;
-    let env = Env::default_env();
+    let mut env = Env::default();
 
     for expr in ast {
-        eval(&expr, env.clone());
+        eval(&expr, &mut env)?;
     }
 
     Ok(())
