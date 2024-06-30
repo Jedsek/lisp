@@ -5,12 +5,12 @@ use std::{cell::RefCell, collections::BTreeMap, num::NonZeroUsize, rc::Rc};
 const CACHE_NUM: usize = 20;
 
 pub type SymbolName = String;
-pub type Map<K, V> = BTreeMap<K, V>;
+pub type Map = BTreeMap<SymbolName, Expr>;
 
 #[derive(Debug, Clone)]
 pub struct Env {
     parent: Option<Rc<RefCell<Env>>>,
-    local: Map<SymbolName, Expr>,
+    local: Map,
     pub cache: Rc<RefCell<LruCache<SymbolName, Expr>>>,
 }
 
@@ -31,7 +31,7 @@ impl Default for Env {
 
 impl Env {
     pub fn new(
-        local: Map<SymbolName, Expr>,
+        local: Map,
         parent: Option<Rc<RefCell<Env>>>,
         cache: Rc<RefCell<LruCache<SymbolName, Expr>>>,
     ) -> Self {
