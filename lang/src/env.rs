@@ -7,6 +7,42 @@ const CACHE_NUM: usize = 20;
 pub type SymbolName = String;
 pub type Map = BTreeMap<SymbolName, Expr>;
 
+// NOTE/FIXME
+// The Enviroment/Nested-Scope implement has problem now.
+// The cache here is just for improvement performance in recursive lambda.
+//
+// Future code:
+//
+/*
+    #[derive(Debug, Clone)]
+    pub struct Env {
+        current_scope: usize,
+        local: Vec<Map>,
+        // local_cache: LruCache   // <-- ?
+    }
+
+    pub fn get(&self, key: &SymbolName) -> Option<Expr> {
+        get_inner(self.current_scope, key)
+    }
+
+    fn get_inner(&self, scope: usize, key: &SymbolName) -> Option<Expr> {
+        let local = &self.local[scope];
+        if let Some(expr) = local.get(key) {
+            Some(expr)
+        } else if scope > 0 {
+            get_inner(scope - 1, key)
+        } else {
+            None
+        }
+    }
+
+    pub define() { /*  */ }
+    pub undefine() {/* */ }
+    pub extend() { /* */ }
+*/
+
+// Shit code here, but I have no time to fix :(
+// I will fix it in next year(2026)
 #[derive(Debug, Clone)]
 pub struct Env {
     parent: Option<Rc<RefCell<Env>>>,

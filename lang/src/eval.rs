@@ -7,6 +7,11 @@ use crate::{
     LangError, LangResult,
 };
 
+//
+// FIXME:
+// so many `clone()`.
+// should improve performance.
+
 pub fn eval(expr: &Expr, env: &mut Env) -> LangResult<Expr> {
     match expr {
         Expr::Symbol(s) => env.get(s).ok_or(LangError::InvalidSymbol(s.into())),

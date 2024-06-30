@@ -11,7 +11,7 @@
   (average guess (/ x guess)))
 
 (define (good-enough? old-guess guess)
-  (> 0.01
+  (> 0.00000001
     (/ (abs (- guess old-guess))
         old-guess)))
 
@@ -23,4 +23,8 @@
 (define (sqrt x)
   (sqrt-iter 1.0 x))
 
-(displayln (sqrt 2))
+
+
+(define number 1293991231230923.1239991293)
+(displayln number)
+(displayln (sqrt number))

@@ -13,7 +13,11 @@ pub enum Expr {
     Bool(bool),
     QExpr(Box<Expr>),
     SExpr(Vec<Expr>),
+    //
+    // FIXME:
+    // The Symbol doesn't need mutablity.
     Symbol(String),
+
     Fn(fn(&[Expr]) -> LangResult<Expr>),
     Lambda(Lambda),
 }
@@ -33,6 +37,8 @@ pub enum ExprType {
 
 #[derive(Debug, Clone, PartialEq, PartialOrd)]
 pub struct Lambda {
+    // FIXME:
+    // Rc?
     pub params: Rc<Expr>,
     pub body: Rc<Expr>,
 }

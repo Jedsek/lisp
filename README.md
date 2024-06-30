@@ -4,6 +4,10 @@
 
 My toy lisp language.  
 
+Note:  
+I am so **busy** now in my life!  
+I will continue this project next year(maybe).  
+
 Type `cargo r -p repl` to start REPL.  
 Type `cargo r -p lang examples/plug.lisp` to run example code.
 
@@ -87,6 +91,25 @@ Type `cargo r -p lang examples/plug.lisp` to run example code.
 (displayln (plus1 4 5))
 (displayln (plus2 4 5))
 ```
+
+# Roadmap
+
+Note again:  
+I am so **busy** now in my life!  
+I will continue this project next year(maybe).  
+
+- [ ] better error handling
+- [ ] improve symbol-table/nested-scope
+- [ ] more std functions/procedures
+- [ ] gc, jit, bytecode
+- [ ] llvm/codegen
+- [ ] module system
+- [ ] macro system
+- [ ] write a blog to teach how to implement it
+- [ ] REPL: syntax highlight && complete
+- [ ] tail-recursion optimization
+- [ ] Improve my shit code
+- [ ] Improve my shit code
 
 # Showcase
 
