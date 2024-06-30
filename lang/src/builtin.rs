@@ -105,7 +105,7 @@ fn define_string(env: &mut Env) {
             let string = parse_list_of_strings(args)?
                 .iter()
                 .fold(String::new(), |acc, e| acc + e);
-            Ok(Expr::String(string))
+            Ok(Expr::String(string.into()))
         }),
     );
 }

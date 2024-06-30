@@ -25,7 +25,7 @@ where
     Ok(Expr::Bool(result))
 }
 
-pub fn parse_list_of_strings(args: &[Expr]) -> LangResult<Vec<String>> {
+pub fn parse_list_of_strings(args: &[Expr]) -> LangResult<Vec<Rc<str>>> {
     args.iter()
         .map(|expr| match expr {
             Expr::String(s) => Ok(s.clone()),

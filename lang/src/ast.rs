@@ -9,7 +9,7 @@ use pest::Parser;
 pub enum Expr {
     Nil,
     Num(f64),
-    String(String),
+    String(Rc<str>),
     Bool(bool),
     QExpr(Box<Expr>),
     SExpr(Vec<Expr>),
@@ -50,7 +50,7 @@ macro_rules! to {
 
 impl Expr {
     to!(inner_num => Num(n) => f64);
-    to!(inner_string => String(s) => String);
+    to!(inner_string => String(s) => Rc<str>);
     to!(inner_bool => Bool(b) => bool);
     to!(inner_q_expr => QExpr(q_expr) => Box<Expr>);
     to!(inner_s_expr => SExpr(s_expr) => Vec<Expr>);
@@ -98,7 +98,7 @@ pub fn from(parsed_exprs: Pair<Rule>) -> LangResult<Vec<Expr>> {
                         .map_err(|e| LangError::ParseFailed(format!("{e}")))?;
                     Expr::Num(num)
                 }
-                Rule::string => Expr::String(inner_expr.into_inner().as_str().to_string()),
+                Rule::string => Expr::String(inner_expr.into_inner().as_str().into()),
                 Rule::bool => Expr::Bool(inner_expr.as_str() == "#t"),
                 Rule::symbol => Expr::Symbol(inner_expr.as_str().to_string()),
                 Rule::s_expr => {
