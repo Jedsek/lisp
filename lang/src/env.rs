@@ -1,12 +1,11 @@
 use crate::{ast::Expr, builtin};
-use indexmap::IndexMap;
 use lru::LruCache;
-use std::{cell::RefCell, num::NonZeroUsize, rc::Rc};
+use std::{cell::RefCell, collections::BTreeMap, num::NonZeroUsize, rc::Rc};
 
 const CACHE_NUM: usize = 20;
 
 pub type SymbolName = String;
-pub type Map<K, V> = IndexMap<K, V>;
+pub type Map<K, V> = BTreeMap<K, V>;
 
 #[derive(Debug, Clone)]
 pub struct Env {
@@ -59,7 +58,7 @@ impl Env {
 
     pub fn undefine(&mut self, symbol: &SymbolName) {
         if self.local.contains_key(symbol) {
-            self.local.shift_remove(symbol);
+            self.local.remove(symbol);
         } else if let Some(parent) = &self.parent {
             parent.borrow_mut().undefine(symbol);
         }

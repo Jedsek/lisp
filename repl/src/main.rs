@@ -44,12 +44,13 @@ fn main() {
                     } else {
                         content.to_string()
                     };
-                    match lang::eval(&input, &mut env, false) {
+                    let ast = lang::eval(&input);
+                    match ast {
                         Err(err) => eprintln!("{}\n", err),
                         Ok(exprs) => {
                             for expr in exprs {
-                                match expr {
-                                    Err(err) => eprintln!("{}\n", err),
+                                match lang::eval::eval(&expr, &mut env) {
+                                    Err(err) => eprintln!("123{}\n", err),
                                     Ok(expr) => {
                                         let id = state.id;
                                         if state.debug_enabled {

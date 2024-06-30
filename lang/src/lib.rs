@@ -9,7 +9,6 @@ pub mod eval;
 pub mod utils;
 
 use ast::Expr;
-use env::Env;
 use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
 use thiserror::Error;
@@ -63,14 +62,13 @@ oH MY GOD WHY THE FUCK DOES ANYONE REALLY READ ALL OF THIS Mister/Ms. YOU ARE FU
 
 pub type LangResult<T> = Result<T, LangError>;
 
-pub fn eval(input: &str, env: &mut Env, _debug_mode: bool) -> LangResult<Vec<LangResult<Expr>>> {
+pub fn eval(input: &str) -> LangResult<Vec<Expr>> {
     let parsed = LangParser::parse(Rule::program, input)
         .map_err(|e| LangError::ParseFailed(format!("{e}")))?
         .next()
         .unwrap();
-    let ast = ast::from(parsed);
-    // println!("{ast:#?}");
-    ast.map(|exprs| exprs.into_iter().map(|e| eval::eval(&e, env)).collect())
+    let ast = ast::from(parsed)?;
+    Ok(ast)
 }
 
 pub fn debug(parsed_exprs: Pair<Rule>) {
